@@ -1,0 +1,198 @@
+#+TITLE: App 1: The Other Side of the World
+
+
+#+BEGIN_SRC python
+print(float("40.09"))
+
+float("-3.47")
+#+END_SRC
+
+Build a python program for a paint store
+
+#+BEGIN_SRC python
+from folium import Map
+
+latitude = float('40.09')
+longitude = float('3.47')
+
+antipode_latitude = latitude.__mul__(int("-1"))
+
+if (longitude.__lt__(float('-180')) or longitude.__gt__(float('180'))):
+    antipode_longitude = str('Invalid Longitude')
+elif (longitude.__lt__(float('0'))):
+    antipode_longitude = longitude.__add__(float("180"))
+elif (longitude.__gt__(float('0'))):
+    antipode_longitude = longitude.__sub__(float("180"))
+elif (longitude.__eq__(float('0'))):
+    antipode_longitude = (float('-180'), float('180'))
+else:
+    antipode_longitude = str('Who knows?')
+
+location = [antipode_latitude, antipode_longitude]
+my_map = Map(location)
+my_map.save(str('antipode.html'))
+
+print(f'\nLatitude:\t{antipode_latitude}\nLongitude:\t{antipode_longitude}')
+#+END_SRC
+
+
+#+BEGIN_SRC python
+from folium import Map
+
+latitude, longitude = 40.09, 3.47
+antipode_latitude = latitude * -1
+
+if -180 < longitude < 180:
+    if longitude < 0:
+        antipode_longitude = longitude + 180
+    elif longitude > 0:
+        antipode_longitude = longitude - 180
+    elif longitude == 0:
+        antipode_longitude = (-180, 180)
+else:
+    antipode_longitude = str('Invalid Longitude')
+
+location = [antipode_latitude, antipode_longitude]
+my_map = Map(location).save('antipode.html')
+
+print(f'\nLatitude:\t{antipode_latitude}\nLongitude:\t{antipode_longitude}')
+#+END_SRC
+
+
+#+BEGIN_SRC python
+wall_area = float('200.5')
+buckets = wall_area.__mul__(float('2.5'))
+price = float('1.99')
+total_price = buckets.__mul__(price)
+print(total_price)
+
+# here we go again
+wall_area = float('200.5')
+buckets = wall_area.__mul__(float('2.5'))
+white_price, color_price = float('1.99'), float('2.19')
+color = 'red'
+
+if color == 'white':
+    total_price = white_price.__mul__(float(buckets))
+else:
+    total_price = color_price.__mul__(buckets)
+
+print(total_price)
+#+END_SRC
+
+#+BEGIN_SRC python
+wall_area = 200.5
+buckets = wall_area * 2.5
+white_price, color_price = 1.99, 2.19
+color = "red"
+
+if color == "white":
+    total_price = buckets * white_price
+else:
+    total_price = buckets * color_price
+
+print(total_price)
+#+END_SRC
+
+* Creating New Types
+
+#+BEGIN_SRC python :tangle geo.py
+from datetime import datetime
+from pytz import timezone
+from timezonefinder import TimezoneFinder
+from sunnyday import Weather
+
+help(Weather)
+
+weather2 = Weather(apikey = "26631f0f41b95fb9f5ac0df9a8f43c92", lat = 41.1, lon = -4.1)
+
+print(weather2.next_12h_simplified())
+
+class Geopoint:
+    def __init__(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
+        self.weather_key = "26631f0f41b95fb9f5ac0df9a8f43c92"
+
+    def closest_parallel(self):
+        return round(self.latitude)
+
+    def get_time(self):
+        timezone_string = TimezoneFinder().timezone_at(lat = self.latitude, lng = self.longitude)
+        time_now = datetime.now(timezone(timezone_string))
+        return time_now
+
+    def get_weather(self):
+        weather = Weather(apikey = self.weather_key, lat = self.latitude, lon = self.longitude)
+        return weather.next_12h_simplified()
+
+
+tokyo = Geopoint(latitude = 35.7, longitude = 139.7)
+print(tokyo.closest_parallel())
+print(tokyo.get_time())
+print(tokyo.get_weather())
+
+#+END_SRC
+
+
+#+BEGIN_SRC python
+from datetime import datetime
+from pytz import timezone
+
+birth = datetime(1879, 3, 14, 0, 0)
+print(birth)
+death = datetime(1955, 4, 18)
+print((death - birth).days / 365.25)
+print(datetime.now())
+
+n = datetime.now()
+birth = datetime(1991, 12, 2)
+print((n - birth).days / 365.25)
+
+# with pytz
+n = datetime.now(timezone("Asia/Tokyo"))
+
+
+#+END_SRC
+
+
+#+BEGIN_SRC python
+from folium import Map
+from geo import Geopoint
+
+latitude, longitude = 40.09, 3.47
+antipode_latitude = latitude * -1
+
+if -180 < longitude < 180:
+    if longitude < 0:
+        antipode_longitude = longitude + 180
+    elif longitude > 0:
+        antipode_longitude = longitude - 180
+    elif longitude == 0:
+        antipode_longitude = (-180, 180)
+else:
+    antipode_longitude = str('Invalid Longitude')
+
+location = [antipode_latitude, antipode_longitude]
+my_map = Map(location).save('antipode.html')
+
+my_point1, my_point2 = Geopoint(41.2, 4.1), Geopoint(41.3, 24.1)
+print(my_point1.closest_parallel(), my_point2.closest_parallel())
+
+print(f'\nLatitude:\t{antipode_latitude}\nLongitude:\t{antipode_longitude}')
+#+END_SRC
+
+#+BEGIN_SRC python
+class House:
+    def __init__(self, wall_area):
+        self.wall_area = wall_area
+
+    def paint_needed(self):
+        return self.wall_area * 2.5
+
+
+class Paint:
+    def __init__(self, buckets, color):
+        self.buckets, self.color = buckets, color       
+#+END_SRC
+
