@@ -1,6 +1,3 @@
-#+TITLE: Flatmate's Bill
-
-#+BEGIN_SRC python :tangle flatmate_bill.py
 from fpdf import FPDF
 
 class Bill:
@@ -44,22 +41,21 @@ class PdfReport:
         """
         Generates a pdf given the bill and the two flatmates
         """
-
-        def gen_cell(pdf_obj, name, value, family = "Helvetica", style = "B", size = 24):
-            pdf_obj.set_font(family = family, style = style, size = size)
-            pdf_obj.cell(w = 100, h = 25,
-                         txt = name, align = "C")
-            pdf_obj.cell(w = 150, h = 25,
-                     txt = value, align = "C", ln = 1)
-
-        # instantiate the pdf and add a page
+        def gen_cell(pdf_obj, name, value):
+            pdf_obj.cell(w = 100, h = 40,
+                         txt = name,
+                         border = 1, align = "C")
+        
+            pdf.cell(w = 150, h = 40,
+                     txt = value,
+                     border = 1, align = "C", ln = 1)
+        
+            
         pdf = FPDF(orientation = "P",
                    unit = "pt",
                    format = "A4")
-        pdf.add_page()
 
-        ## add icon
-        pdf.image("house.png", w = 30, h = 30)
+        pdf.add_page()
 
         # add some text
         pdf.set_font(family = "Times", size = 24, style = "B")
@@ -67,18 +63,17 @@ class PdfReport:
         # insert title
         pdf.cell(w = 0, h = 80,
                  txt = "Flatmate's Bill",
-                 align = "C", ln = 1)
+                 border = 1, align = "C", ln = 1)
 
         # insert period label and value
-        gen_cell(pdf, "Period:", bill.period, size = 14)
+        gen_cell(pdf, "Period:", bill.period)
 
         # insert name and due amount of the flatmates
-        gen_cell(pdf, flatmate1.name, "$" + str(flatmate1.pays(bill, flatmate2)), size = 14, style = "")
-        gen_cell(pdf, flatmate2.name, "$" + str(flatmate2.pays(bill, flatmate1)), size = 14, style = "")
+        gen_cell(pdf, flatmate1.name, str(flatmate1.pays(bill, flatmate2)))
+        gen_cell(pdf, flatmate2.name, str(flatmate2.pays(bill, flatmate1)))
 
-        # output the pdf file
         pdf.output(self.filename)
-
+        
 the_bill = Bill(amount = 120, period = "June 2021")
 john = Flatmate(name = "John", days_in_house = 20)
 mary = Flatmate(name = "Mary", days_in_house = 25)
@@ -93,32 +88,3 @@ pdf_report = PdfReport("Report1.pdf")
 pdf_report.generate(flatmate1 = john,
                     flatmate2 = mary,
                     bill = the_bill)
-#+END_SRC
-
-#+BEGIN_SRC python
-from fpdf import FPDF
-
-pdf = FPDF(orientation = "P",
-           unit = "pt",
-           format = "A4")
-
-pdf.add_page()
-
-# add some text
-pdf.set_font(family = "Times", size = 24, style = "B")
-
-pdf.cell(w = 0, h = 80,
-         txt = "Flatmate's Bill",
-         border = 1, align = "C", ln = 1)
-
-pdf.cell(w = 100, h = 40,
-         txt = "Period:",
-         border = 1, align = "C")
-
-pdf.cell(w = 150, h = 40,
-         txt = "March 2021",
-         border = 1, align = "C")
-
-pdf.output("bill.pdf")
-
-#+END_SRC

@@ -1,6 +1,3 @@
-#+TITLE: Flatmate's Bill
-
-#+BEGIN_SRC python :tangle flatmate_bill.py
 from fpdf import FPDF
 
 class Bill:
@@ -93,32 +90,3 @@ pdf_report = PdfReport("Report1.pdf")
 pdf_report.generate(flatmate1 = john,
                     flatmate2 = mary,
                     bill = the_bill)
-#+END_SRC
-
-#+BEGIN_SRC python
-from fpdf import FPDF
-
-pdf = FPDF(orientation = "P",
-           unit = "pt",
-           format = "A4")
-
-pdf.add_page()
-
-# add some text
-pdf.set_font(family = "Times", size = 24, style = "B")
-
-pdf.cell(w = 0, h = 80,
-         txt = "Flatmate's Bill",
-         border = 1, align = "C", ln = 1)
-
-pdf.cell(w = 100, h = 40,
-         txt = "Period:",
-         border = 1, align = "C")
-
-pdf.cell(w = 150, h = 40,
-         txt = "March 2021",
-         border = 1, align = "C")
-
-pdf.output("bill.pdf")
-
-#+END_SRC
