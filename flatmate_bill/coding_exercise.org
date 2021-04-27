@@ -1,0 +1,29 @@
+
+#+BEGIN_SRC python
+class Rectangle:
+    def __init__(self, width, height, x, y):
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+
+    def area(self):
+        return self.width * self.height
+
+    def distance_to_point(self, x, y):
+        return ((self.x - x)**2 + (self.y - y)**2) ** 0.5
+
+    def time_to_point(self, x, y, speed):
+        return self.distance_to_point(x, y) / speed
+
+    def perimeter(self):
+        return 2 * self.width + 2 * self.height
+        
+        
+rect = Rectangle(20, 40, 3, 2)
+
+print(rect.time_to_point(6, 4, 5))
+
+rect = Rectangle(3, 4, 1, 2)
+print(rect.time_to_point(2, 3, 20))
+#+END_SRC
