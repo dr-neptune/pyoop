@@ -3,57 +3,59 @@
 * App Overview
 
 ** Description
-   A command line app that allows the user to draw a series of colored rectangles and squares onto a canvas by entering coordinates into the prompt. 
+   A command line app that allows the user to draw a series of colored rectangles and squares onto a canvas by entering coordinates into the prompt.
 
 ** Objects
 *** Canvas
+**** generate_canvas()
+**** add_shape()
+**** make_image()
 *** Shape
 **** Rectangle
 **** Square
-*** Image
-**** generate image
 
+* App Code
+
+** Canvas Class
 
 #+BEGIN_SRC python :tangle canvas.py
+import numpy as np
+from color_dict import *
+from PIL import Image
+
 class Canvas:
     def __init__(self, height, width, color):
         self.height = height
         self.width = width
         self.color = color
-        
+        self.base = np.zeros((self.height, self.width, 3), dtype = np.uint8)
+    
     def generate_canvas(self):
-        base = np.zeros((self.height, self.width, 3), dtype = np.uint8)
-        if self.color == "black":
-            base[:] = [0, 0, 0]
-            return base
-        elif self.color == "white":
-            base[:] = [255, 255, 255]
-            return base
+        if get_color(self.color) != None:
+            self.base[:] = [*get_color(self.color)]
         else:
-            return "Error! Cannot generate canvas due to unspecified color (not black/white)"
+            print("Error! Cannot generate canvas due to unspecified color.\nGenerating a black canvas as a default.")
+            self.base
 
-    def make_image(image_path):
-        pass
+    def add_shape(self, x_start, x_end, y_start, y_end, color):
+        self.base[y_start:y_end, x_start:x_end] = color
 
+    def make_image(self, image_path):
+        img = Image.fromarray(self.base, "RGB")
+        img.save(image_path)
 #+END_SRC
 
+** Shape Classes
+
 #+BEGIN_SRC python :tangle shape.py
+from color_dict import *
+
 class Shape:
     colors = {}
     def __init__(self, x, y, color):
         self.x = x
         self.y = y
         self.color = color
-
-class Square(Shape):
-    def __init__(self, x, y, side, color, canvas):
-        super().__init__(x, y, color)
-        self.side = side
-        self.canvas = canvas
-
-    def draw(self, canvas):
-        return canvas[self.x:(self.x + self.side), self.y:(self.y + self.side)] = 
-# data[100:150, 100:200] = [255, 200, 233]
 
 class Rectangle(Shape):
     def __init__(self, x, y, height, width, color, canvas):
@@ -63,20 +65,91 @@ class Rectangle(Shape):
         self.canvas = canvas
 
     def draw(self, canvas):
-        pass
+        canvas.add_shape(x_start = self.x,
+                         x_end = self.x + self.width,
+                         y_start = self.y,
+                         y_end = self.y + self.height,
+                         color = [*get_color(self.color)])
+        return canvas
+
+class Square(Rectangle):
+    def __init__(self, x, y, side, color, canvas):
+        super().__init__(x, y, side, side, color, canvas)
+        self.side = side
+        self.canvas = canvas
+
+    def draw(self, canvas):
+        canvas.add_shape(x_start = self.x,
+                         x_end = self.x + self.side,
+                         y_start = self.y,
+                         y_end = self.y + self.side,
+                         color = [*get_color(self.color)])
+        return canvas    
 #+END_SRC
 
+** Main
+
+We want a prompt:
+
+- Enter canvas width
+- Enter canvas height
+- Enter canvas color
+
+repeat until quit is entered:
+- What would you like to draw (square (s) or rectangle (r))?
+- Enter the x coordinate of the upper left corner of your shape:
+- Enter the y coordinate of the upper left corner of your shape:
+- Enter the width of your shape: 
+- (if rectangle, not square): Enter the height of your rectangle:
+- What color is your shape?
+
+
 #+BEGIN_SRC python :tangle main.py
-from color_dict import colors_dict
+from canvas import Canvas
+from shape import Square, Rectangle
+from color_dict import *
+from webbrowser import open
+from os import path
 
-canvas = Canvas(1000, 1000, "black")
-print(canvas.generate_canvas())
+# enter canvas information
+c_h = int(input("Enter canvas height (px):\n"))
+c_w = int(input("Enter canvas width (px):\n"))
+c_c = input("Enter the canvas color:\n")
 
-sq = Square(100, 100, 50, "green", canvas)
-rect = Rectangle(100, 100, 150, 400, "blue", canvas)
+canvas = Canvas(c_h, c_w, c_c)
+canvas.generate_canvas()
 
-print(sq)
-print(rect)
+# repeat the shape input prompt until quit is entered
+def prompt(canvas):
+    def draw_loop(shape = ""):
+        global canvas
+        if not shape in ["r", "s", "q"]:
+            print(f"Error: Unknown shape: {shape}")
+            return
+        if shape == "q":
+            filename_out = input("Please enter a filename for your masterpiece (example: album_cover.png):\n")
+            canvas.make_image(filename_out)
+            open("file://" + path.realpath(filename_out))
+            print(f"Be sure to check out your art! {filename_out}")
+            return
+        else:
+            s_color = input("What color is your shape?\n")
+            x_coord = int(input("Enter the x coordinate of the upper left corner of your shape:\n"))
+            y_coord = int(input("Enter the y coordinate of the upper left corner of your shape:\n"))
+            s_width = int(input("Enter the width of your shape:\n"))
+            if shape == "r":
+                s_height = int(input("Enter the height of your rectangle:\n"))
+                rect = Rectangle(x_coord, y_coord, s_height, s_width, s_color, canvas)
+                canvas = rect.draw(canvas)
+            else: # shape is s
+                square = Square(x_coord, y_coord, s_width, s_color, canvas)
+                canvas = square.draw(canvas)
+        shape_input = input("What would you like to draw? (square (s), rectangle (r), quit (q)):\n")
+        draw_loop(shape_input)
+    shape_input = input("What would you like to draw? (square (s), rectangle (r), quit (q)):\n")
+    draw_loop(shape_input)
+
+prompt(canvas)
 #+END_SRC
 
 * Testing
@@ -106,12 +179,7 @@ img.save("canvas.png")
 # import color dict and get its values
 from color_dict import *
 
-from color_dict import Color
-
-print(colors_dict["maroon"])
-
-print(get_colors("white"))
-
+print([*get_color("purple")])
 #+END_SRC
 
 ** Make Colors
@@ -257,7 +325,7 @@ colors_dict = {"maroon": (128,0,0),
                "white smoke": (245,245,245),
                "white": (255,255,255)}
 
-def get_colors(color_name):
+def get_color(color_name):
     try:
         color = colors_dict[color_name]
     except:

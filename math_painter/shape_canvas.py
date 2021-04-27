@@ -8,13 +8,13 @@ class Canvas:
         self.width = width
         self.color = color
         self.base = np.zeros((self.height, self.width, 3), dtype = np.uint8)
-    
+        
     def generate_canvas(self):
-        if get_color(self.color) != None:
+        if get_color(self.color) == None:
             self.base[:] = [*get_color(self.color)]
+            return self
         else:
-            print("Error! Cannot generate canvas due to unspecified color.\nGenerating a black canvas as a default.")
-            self.base
+            return "Error! Cannot generate canvas due to unspecified color."
 
     def add_shape(self, x_start, x_end, y_start, y_end, color):
         self.base[y_start:y_end, x_start:x_end] = color
