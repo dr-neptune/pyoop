@@ -33,6 +33,7 @@ class Flatmate:
 from fpdf import FPDF
 from webbrowser import open
 from os import path
+from filestack import Client
 
 class PdfReport:
     """
@@ -61,7 +62,7 @@ class PdfReport:
         pdf.add_page()
 
         ## add icon
-        pdf.image("house.png", w = 30, h = 30)
+        pdf.image("files/house.png", w = 30, h = 30)
 
         # add some text
         pdf.set_font(family = "Times", size = 24, style = "B")
@@ -83,12 +84,22 @@ class PdfReport:
 
         # open the generated pdf
         open("file://" + path.realpath(self.filename))
+
+class FileSharer:
+    def __init__(self, filepath, api_key = "AViVqp7suSQWWEdrl6hf9z"):
+        self.filepath = filepath
+        self.api_key = api_key
+
+    def share(self):
+        client = Client(self.api_key)
+        new_filelink = client.upload(filepath = self.filepath)
+        return new_filelink.url
 #+END_SRC
 
 #+BEGIN_SRC python :tangle flatmate_bill.py
 from re import sub
 from flat import Bill, Flatmate
-from reports import PdfReport
+from reports import PdfReport, FileSharer
 
 # CLI prompts
 amount = float(sub("[^0-9+]", "", input("Hey user, enter the bill amount:\n")))
@@ -112,6 +123,17 @@ pdf_report = PdfReport(f"files/{the_bill.period}.pdf")
 
 # open the pdf report
 pdf_report.generate(flatmate1, flatmate2, the_bill)
+
+# share the file link
+file_sharer = FileSharer(filepath = pdf_report.filename)
+print(file_sharer.share())
 #+END_SRC
 
+#+BEGIN_SRC python :tangle try_filestack.py
+from filestack import Client
 
+client = Client("AViVqp7suSQWWEdrl6hf9z")
+
+new_filelink = client.upload(filepath = "files/scratch.txt")
+print(new_filelink.url)
+#+END_SRC

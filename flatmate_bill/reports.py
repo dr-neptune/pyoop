@@ -1,6 +1,7 @@
 from fpdf import FPDF
 from webbrowser import open
 from os import path
+from filestack import Client
 
 class PdfReport:
     """
@@ -47,7 +48,17 @@ class PdfReport:
         gen_cell(pdf, flatmate2.name, "$" + str(flatmate2.pays(bill, flatmate1)), size = 14, style = "")
 
         # output the pdf file
-        pdf.output(f"files/{self.filename}")
+        pdf.output(self.filename)
 
         # open the generated pdf
-        open("file://" + path.realpath(f"files/{self.filename}"))
+        open("file://" + path.realpath(self.filename))
+
+class FileSharer:
+    def __init__(self, filepath, api_key = "AViVqp7suSQWWEdrl6hf9z"):
+        self.filepath = filepath
+        self.api_key = api_key
+
+    def share(self):
+        client = Client(self.api_key)
+        new_filelink = client.upload(filepath = self.filepath)
+        return new_filelink.url

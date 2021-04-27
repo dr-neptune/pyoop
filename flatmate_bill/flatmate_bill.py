@@ -1,6 +1,6 @@
 from re import sub
 from flat import Bill, Flatmate
-from reports import PdfReport
+from reports import PdfReport, FileSharer
 
 # CLI prompts
 amount = float(sub("[^0-9+]", "", input("Hey user, enter the bill amount:\n")))
@@ -20,7 +20,11 @@ print(f"{flatmate1.name} pays:\t", flatmate1.pays(the_bill, flatmate2))
 print(f"{flatmate2.name} pays:\t", flatmate2.pays(the_bill, flatmate1))
 
 # generate pdf report
-pdf_report = PdfReport(f"{the_bill.period}.pdf")
+pdf_report = PdfReport(f"files/{the_bill.period}.pdf")
 
 # open the pdf report
 pdf_report.generate(flatmate1, flatmate2, the_bill)
+
+# share the file link
+file_sharer = FileSharer(filepath = pdf_report.filename)
+print(file_sharer.share())

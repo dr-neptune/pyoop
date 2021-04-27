@@ -1,0 +1,37 @@
+#+TITLE: Math Painter
+
+* App Overview
+
+** Description
+   A command line app that allows the user to draw a series of colored rectangles and squares onto a canvas by entering coordinates into the prompt. 
+
+** Objects
+*** Canvas
+*** Shape
+**** Rectangle
+**** Square
+*** Image
+**** generate image
+
+
+* Testing
+
+** Create an Image
+
+#+BEGIN_SRC python
+import numpy as np
+from PIL import Image
+
+# create a 3D numpy array of zeros, then replaced zeros (black pixels) with yellow pixels
+data = np.zeros((500, 400, 3), dtype = np.uint8)
+
+data[:] = [255, 255, 255]
+
+# make a red patch
+data[100:400, 100:300] = [255, 200, 233]
+data[10:200, 100:225] = [45, 200, 33]
+data[350:450, 175:300] = [45, 200, 255]
+
+img = Image.fromarray(data, "RGB")
+img.save("canvas.png")
+#+END_SRC
