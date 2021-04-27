@@ -20,7 +20,8 @@ def prompt(canvas):
             print(f"Error: Unknown shape: {shape}")
             return
         if shape == "q":
-            filename_out = input("Please enter a filename for your masterpiece (example: album_cover.png):\n")
+            filename_out = input("Please enter a filename for your masterpiece (example: album_cover (.png not required)):\n")
+            filename_out = filename_out + ".png"
             canvas.make_image(filename_out)
             open("file://" + path.realpath(filename_out))
             print(f"Be sure to check out your art! {filename_out}")

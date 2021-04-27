@@ -49,13 +49,19 @@ class Canvas:
 
 #+BEGIN_SRC python :tangle shape.py
 from color_dict import *
+from random import choice
 
 class Shape:
-    colors = {}
     def __init__(self, x, y, color):
         self.x = x
         self.y = y
         self.color = color
+        if self.color in colors_dict.keys():
+            self.color = color
+        else:
+            rand_color = choice(list(colors_dict.keys()))
+            print(f"Color not recognized. I'm gonna paint it {rand_color}")
+            self.color = rand_color
 
 class Rectangle(Shape):
     def __init__(self, x, y, height, width, color, canvas):
@@ -127,7 +133,8 @@ def prompt(canvas):
             print(f"Error: Unknown shape: {shape}")
             return
         if shape == "q":
-            filename_out = input("Please enter a filename for your masterpiece (example: album_cover.png):\n")
+            filename_out = input("Please enter a filename for your masterpiece (example: album_cover (.png not required)):\n")
+            filename_out = filename_out + ".png"
             canvas.make_image(filename_out)
             open("file://" + path.realpath(filename_out))
             print(f"Be sure to check out your art! {filename_out}")
