@@ -1,0 +1,151 @@
+* Webcam Photo Sharer
+
+** Design
+
+Title: Webcam Photo Sharer
+Description: This is an app that starts with the webcam, let's the user capture a photo and uploads the photo to the web and creates a shareable link.
+
+** Objects
+*** Webcam
+**** start()
+**** stop()
+**** capture()
+*** FileSharer:
+**** filepath
+**** api
+**** share()
+
+#+BEGIN_SRC python :tangle main.py
+from kivy.app import App
+from kivy.uix.screenmanager import ScreenManager, Screen 
+from kivy.lang import Builder
+from filesharer import FileSharer
+import time
+
+# communicate with frontend.kv
+Builder.load_file("frontend.kv")
+
+class CameraScreen(Screen):
+    def start(self):
+        self.ids.camera.Index = -1
+        self.ids.camera.play = True
+        self.ids.camera_button.text = "Stop Camera"
+        self.ids.camera.texture = self.ids.camera._camera.texture
+        
+    def stop(self):
+        self.ids.camera.play = False
+        self.ids.camera_button.text = "Start Camera"
+        self.ids.camera.texture = None
+    
+    def capture(self):
+        filename = "files/" + time.strftime("%Y%m%d-%H%M%S") + ".png"
+        self.ids.camera.export_to_png(filename)
+        self.manager.current = "image_screen"
+        self.manager.current_screen.ids.img.source = filename
+        self.manager
+
+class ImageScreen(Screen):
+    pass
+
+class RootWidget(ScreenManager):
+    pass
+    
+class MainApp(App):
+    def build(self):
+        return RootWidget()
+
+MainApp().run()
+#+END_SRC
+
+#+BEGIN_SRC python :tangle filesharer.py
+class FileSharer:
+    def __init__(self, filepath, api_key = "AViVqp7suSQWWEdrl6hf9z"):
+        self.filepath = filepath
+        self.api_key = api_key
+
+    def share(self):
+        client = Client(self.api_key)
+        new_filelink = client.upload(filepath = self.filepath)
+        return new_filelink.url
+#+END_SRC
+
+#+BEGIN_SRC kivy :tangle frontend.kv
+<CameraScreen>:
+    GridLayout:
+        cols: 1
+        Camera:
+            id: camera
+            play: False
+        Button:
+            id: camera_button
+            text: "Start Camera"
+            on_press: root.start() if root.ids.camera.play == False else root.stop()
+        Button:
+            id: capture_button
+            text: "Capture"
+            on_press: root.capture()
+
+<ImageScreen>:
+    GridLayout:
+        cols: 1
+        Image:
+        Button:
+            text: "Create Shareable Link"
+        Label:
+            text: ""
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Copy Link"
+            Button:
+                text: "Open Link"
+            
+<RootWidget>:
+    CameraScreen:
+        id: camera_screen
+        name: "camera_screen"
+    ImageScreen:
+        id: image_screen
+        name: "image_screen"
+#+END_SRC
+
+
+* Scratch
+
+This was an attempt to try to get the index for a plugin usb web cam. I had hoped to use that as a default.
+
+I still have not gotten kivy to correctly use the usb webcam instead of the builtin webcam.
+
+#+BEGIN_SRC python
+# import cv2
+# def find_camera_index():
+#     index = 0
+#     arr = []
+#     while True:
+#         cap = cv2.VideoCapture(index)
+#         if not cap.read()[0]:
+#             break
+#         else:
+#             arr.append(index)
+#             cap.release()
+#             index += 1
+#     return arr
+
+# def returnCameraIndexes():
+#     # checks the first 10 indexes.
+#     index = 0
+#     arr = []
+#     i = 10
+#     while i > 0:
+#         cap = cv2.VideoCapture(index)
+#         if cap.read()[0]:
+#             arr.append(index)
+#             print(index)
+#             cap.release()
+#         index += 1
+#         i -= 1
+#     return arr
+
+
+# print(returnCameraIndexes())
+#+END_SRC

@@ -1,20 +1,37 @@
-<FirstScreen>:
+<CameraScreen>:
     GridLayout:
         cols: 1
-        padding: 10
-        spacing: 10
-        Image:
-            id: img
-            size_hint_y: 0.80
-        TextInput:
-            id: txt
-            size_hint_y: 0.1
+        Camera:
+            id: camera
+            play: False
         Button:
-            text: "Search Image"
-            size_hint_y: 0.1
-            on_press: root.set_image()
+            id: camera_button
+            text: "Start Camera"
+            on_press: root.start() if root.ids.camera.play == False else root.stop()
+        Button:
+            id: capture_button
+            text: "Capture"
+            on_press: root.capture()
+
+<ImageScreen>:
+    GridLayout:
+        cols: 1
+        Image:
+        Button:
+            text: "Create Shareable Link"
+        Label:
+            text: ""
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Copy Link"
+            Button:
+                text: "Open Link"
 
 <RootWidget>:
-    FirstScreen:
-        id: first_screen
-        name: "first_screen"
+    CameraScreen:
+        id: camera_screen
+        name: "camera_screen"
+    ImageScreen:
+        id: image_screen
+        name: "image_screen"

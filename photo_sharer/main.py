@@ -1,32 +1,31 @@
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen 
 from kivy.lang import Builder
-import wikipedia
-import requests
-
+from filesharer import FileSharer
+import time
 
 # communicate with frontend.kv
 Builder.load_file("frontend.kv")
 
-class FirstScreen(Screen):
-    def get_image_link(self):
-        # get user query from text input
-        query = self.manager.current_screen.ids.txt.text
-        print(f"Now searching: {query}\n")
+class CameraScreen(Screen):
+    def start(self):
+        self.ids.camera.Index = -1
+        self.ids.camera.play = True
+        self.ids.camera_button.text = "Stop Camera"
+        self.ids.camera.texture = self.ids.camera._camera.texture
+        
+    def stop(self):
+        self.ids.camera.play = False
+        self.ids.camera_button.text = "Start Camera"
+        self.ids.camera.texture = None
+    
+    def capture(self):
+        filename = "files/" + time.strftime("%Y%m%d-%H%M%S") + ".png"
+        self.ids.camera.export_to_png(filename)
+        self.manager.current = "image_screen"
 
-        # get wikipedia page and the first image link
-        return wikipedia.page(query).images[0]
-        
-    def download_image(self):
-        # download the image
-        image_path = "files/image.png"
-        with open(image_path, "wb") as file:
-            file.write(requests.get(self.get_image_link()).content)
-        return image_path
-        
-    def set_image(self):
-        # place new image in the image bucket
-        self.manager.current_screen.ids.img.source = self.download_image()
+class ImageScreen(Screen):
+    pass
 
 class RootWidget(ScreenManager):
     pass

@@ -1,16 +1,3 @@
-#+TITLE: Photo Searcher
-
-* Wikipedia Images App
-
-A kivy app is made of 4 objects:
-
-- App
-- ScreenManager
-- Screen
-- Widget
-
-
-#+BEGIN_SRC python :tangle wiki_images_app.py
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.lang import Builder
@@ -55,50 +42,3 @@ class MainApp(App):
         return RootWidget()
 
 MainApp().run()
-#+END_SRC
-
-This code defines how the screen looks:
-
-#+BEGIN_SRC kivy :tangle wiki_frontend.kv
-<FirstScreen>:
-    GridLayout:
-        cols: 1
-        padding: 10
-        spacing: 10
-        Image:
-            id: img
-            size_hint_y: 0.80
-        TextInput:
-            id: txt
-            size_hint_y: 0.1
-        Button:
-            text: "Search Image"
-            size_hint_y: 0.1
-            on_press: root.clear_image()
-            on_release: root.set_image()
-
-<RootWidget>:
-    FirstScreen:
-        id: first_screen
-        name: "first_screen"
-#+END_SRC  
-
-* Testing
-
-** Try out Wikipedia Library
-
-#+BEGIN_SRC python
-import wikipedia
-import requests
-
-page = wikipedia.page("beach")
-link = page.images[0]
-
-# download a file
-req = requests.get(link)
-
-print(type(req.content))
-
-with open("the_beach.jpg", "wb") as file:
-    file.write(req.content)
-#+END_SRC
