@@ -1,0 +1,104 @@
+#+TITLE: Flatmate Web App
+
+* Design
+
+We want to make the flatmate bill command line tool into a web application.
+
+There will be 3 pages:
+- The home page will have the page title, the website description, and a link to the bill form page
+- The Bill Form page will have the page title, a page description which drops down to a billing form, and a calculate button
+- The Results page will have a link to download the pdf
+
+* Classes
+
+** Home Page
+
+** Bill Form Page
+*** Bill Form Class
+
+** Results Page
+
+* Program
+
+#+BEGIN_SRC python :tangle main.py
+from flask.views import MethodView
+from wtforms import Form
+
+class HomePage(MethodView):
+    pass
+
+
+class BillForm(MethodView):
+    pass
+
+
+class BillForm(MethodView):
+    pass
+
+
+class Results(Form):
+    pass
+
+
+
+#+END_SRC
+
+* Practice
+
+#+BEGIN_SRC python :tangle liquid.py
+class Matter:
+    def __init__(self, temperature, freezing, boiling):
+        self.boiling = boiling
+        self.freezing = freezing
+        self.temperature = temperature
+
+    def state(self):
+        if self.temperature < self.freezing:
+            return "solid"
+        elif self.temperature > self.boiling:
+            return "gas"
+        else:
+            return "liquid"
+
+
+class Water(Matter):
+    def __init__(self, temperature):
+        super().__init__(temperature, 0, 100)
+
+
+class Mercury(Matter):
+    def __init__(self, temperature):
+        super().__init__(temperature, -38.83, 356.7)
+
+worder = Water(99)
+print(worder.state())
+mercury_inst = Mercury(410)
+print(mercury_inst.state())
+
+# alternatively
+# Ardit Solution:
+class Matter:
+    boiling_temperature = None
+    freezing_temperature = None
+
+    def __init__(self, temperature):
+        self.temperature = temperature
+
+    def state(self):
+        if self.temperature <= self.freezing_temperature:
+            return "solid"
+        elif self.temperature >= self.boiling_temperature:
+            return "gas"
+        else:
+            return "liquid"
+
+
+class Water(Matter):
+    boiling_temperature = 100
+    freezing_temperature = 0
+
+
+class Mercury(Matter):
+    boiling_temperature = 356.7
+    freezing_temperature = -38.83
+#+END_SRC
