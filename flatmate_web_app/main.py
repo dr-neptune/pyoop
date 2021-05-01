@@ -1,6 +1,7 @@
 from flask.views import MethodView
 from wtforms import Form, StringField, SubmitField
 from flask import Flask, render_template, request
+from flatmate_bill import flat
 
 app = Flask(__name__)
 
@@ -18,21 +19,33 @@ class BillFormPage(MethodView):
 
 
 class BillForm(Form):
-    amount = StringField("Bill Amount: ")
-    period = StringField("Bill Period: ")
-    name1 = StringField("Name: ")
-    days_in_house1 = StringField("Days in the House: ")
-    name2 = StringField("Name: ")
-    days_in_house2 = StringField("Days in the House: ")
+    amount = StringField("Bill Amount: ", default="100")
+    period = StringField("Bill Period: ", default="April 2021")
+    name1 = StringField("Name: ", default="Michael")
+    days_in_house1 = StringField("Days in the House: ", default="25")
+    name2 = StringField("Name: ", default="Kelsey")
+    days_in_house2 = StringField("Days in the House: ", default="31")
 
     button = SubmitField("Calculate")
 
 
 class ResultsPage(MethodView):
-    def get(self):
+    def post(self):
         billform = BillForm(request.form)
-        amount = billform.amount.data
-        return amount
+
+        the_bill = flat.Bill(float(billform.amount.data), billform.period.data)
+
+        flatmate1 = flat.Flatmate(billform.name1.data,
+                                  float(billform.days_in_house1.data))
+
+        flatmate2 = flat.Flatmate(billform.name2.data,
+                                  float(billform.days_in_house2.data))
+
+        return render_template("results_page.html",
+                               name1=flatmate1.name,
+                               amount1=flatmate1.pays(the_bill, flatmate2),
+                               name2=flatmate2.name,
+                               amount2=flatmate2.pays(the_bill, flatmate1))
 
 
 app.add_url_rule("/",
