@@ -23,8 +23,8 @@ class Temperature:
     """
 
     def __init__(self, country, city):
-        self.country = country.replace(" ", "_")
-        self.city = city.replace(" ", "_")
+        self.country = country.replace(" ", "-")
+        self.city = city.replace(" ", "-")
 
     def get(self):
         # form url string
@@ -37,4 +37,6 @@ class Temperature:
         extractor = Extractor.from_yaml_string(self.xpath_selector)
 
         # return the extracted temperature as a single number
-        return float(extractor.extract(content)["temp"].replace("\xa0°F", "").strip())
+        return float(extractor.extract(content)["temp"]
+                     .replace("\xa0°F", "")
+                     .strip())

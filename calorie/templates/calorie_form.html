@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calorie Calculation Form</title>
+    <link rel="stylesheet" href="static/main.css">
+  </head>
+  <body>
+    <h2>Calorie Calculator</h2>
+    <p>Fill in the form and click the button to get the results</p>
+    <form action="/" method="post">
+      {{calorie_form.weight.label}} {{calorie_form.weight}}
+      <br>
+      {{calorie_form.height.label}} {{calorie_form.height}}
+      <br>
+      {{calorie_form.age.label}} {{calorie_form.age}}
+      <hr>
+      <br>
+      {{calorie_form.city.label}} {{calorie_form.city}}
+      <br>
+      {{calorie_form.country.label}} {{calorie_form.country}}
+      <br>
+      {{calorie_form.button}}
+      <br>
+      <br>
+      {% if result %}
+      <h3>You must eat {{tkcal}} calories per day to maintain your current state.</h3>
+      {% endif %}
+    </form>
+  </body>
+</html>
