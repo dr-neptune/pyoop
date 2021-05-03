@@ -13,22 +13,120 @@ class Calorie:
         self.age = age
 
     def calculate(self):
-        pass
+        def lbs_to_kg(wt):
+            return float(wt) * .453592
 
+        def in_to_cm(ht):
+            return float(ht) * 2.54
+
+        def f_to_c(temp):
+            return (float(temp) - 32) * (5/9)
+
+        weight = lbs_to_kg(self.weight)
+        height = in_to_cm(self.height)
+        age = float(self.age)
+        temp = f_to_c(self.temperature)
+        return (10 * weight) + (6.25 * height) - (5 * age) + 5 - (temp * 10)
 #+END_SRC
 
 #+BEGIN_SRC python :tangle temperature.py
+import requests
+from selectorlib import Extractor
+
+
 class Temperature:
     """
     Represent a temperature value extracted from
     the webpage: timeanddate.com/weather
     """
+    headers = {
+        'pragma': 'no-cache',
+        'cache-control': 'no-cache',
+        'dnt': '1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': 'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
+    }
+
+    xpath_selector = """
+    temp:
+      xpath: '/html/body/div[6]/main/article/section[1]/div[1]/div[2]'
+    """
+
     def __init__(self, country, city):
-        self.country = country
-        self.city = city
+        self.country = country.replace(" ", "-")
+        self.city = city.replace(" ", "-")
 
     def get(self):
-        pass
+        # form url string
+        url = f"https://www.timeanddate.com/weather/{self.country}/{self.city}"
+
+        # get page text
+        content = requests.get(url, headers=self.headers).text
+
+        # instantiate the extractor object
+        extractor = Extractor.from_yaml_string(self.xpath_selector)
+
+        # return the extracted temperature as a single number
+        return float(extractor.extract(content)["temp"]
+                     .replace("\xa0°F", "")
+                     .strip())
+#+END_SRC
+
+#+BEGIN_SRC python :tangle main.py
+# flask app
+from flask.views import MethodView
+from wtforms import Form, StringField, SubmitField
+from flask import Flask, render_template, request
+from temperature import Temperature
+from calorie import Calorie
+
+app = Flask(__name__)
+
+
+class CaloriePage(MethodView):
+    def get(self):
+        calorie_form = CalorieForm()
+        return render_template("calorie_form.html",
+                               calorie_form=calorie_form)
+
+    def post(self):
+        calorie_form = CalorieForm(request.form)
+
+        temperature = Temperature(country=calorie_form.country.data,
+                                  city=calorie_form.city.data)
+
+        calories = Calorie(weight=calorie_form.weight.data,
+                           height=calorie_form.height.data,
+                           age=calorie_form.age.data,
+                           temperature=temperature.get())
+
+        return render_template("calorie_form.html",
+                               result=True,
+                               calorie_form=calorie_form,
+                               weight=calories.weight,
+                               height=calories.height,
+                               age=calories.age,
+                               temperature=calories.temperature,
+                               tkcal=round(calories.calculate()))
+
+
+class CalorieForm(Form):
+    weight = StringField("Weight:", default=150)
+    height = StringField("Height:", default=68)
+    age = StringField("Age:", default=29)
+    city = StringField("City:", default="Worcester")
+    country = StringField("Country:", default="usa")
+
+    button = SubmitField("Calculate")
+
+
+app.add_url_rule("/",
+                 view_func=CaloriePage.as_view("calorie_form.html"))
+
+
+app.run(debug=True)
 #+END_SRC
 
 * Scraping Overview

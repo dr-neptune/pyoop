@@ -7,6 +7,7 @@ from calorie import Calorie
 
 app = Flask(__name__)
 
+
 class CaloriePage(MethodView):
     def get(self):
         calorie_form = CalorieForm()
@@ -16,8 +17,8 @@ class CaloriePage(MethodView):
     def post(self):
         calorie_form = CalorieForm(request.form)
 
-        temperature = Temperature(country = calorie_form.country.data,
-                                  city = calorie_form.city.data)
+        temperature = Temperature(country=calorie_form.country.data,
+                                  city=calorie_form.city.data)
 
         calories = Calorie(weight=calorie_form.weight.data,
                            height=calorie_form.height.data,

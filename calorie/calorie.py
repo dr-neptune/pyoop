@@ -10,8 +10,17 @@ class Calorie:
         self.age = age
 
     def calculate(self):
-        weight = (float(self.weight) * .453592)
-        height = (float(self.height) * 2.54)
+        def lbs_to_kg(wt):
+            return float(wt) * .453592
+
+        def in_to_cm(ht):
+            return float(ht) * 2.54
+
+        def f_to_c(temp):
+            return (float(temp) - 32) * (5/9)
+
+        weight = lbs_to_kg(self.weight)
+        height = in_to_cm(self.height)
         age = float(self.age)
-        temp = ((float(self.temperature) - 32) * (5 / 9))
+        temp = f_to_c(self.temperature)
         return (10 * weight) + (6.25 * height) - (5 * age) + 5 - (temp * 10)
