@@ -1,0 +1,25 @@
+#+TITLE: Instant Dictionary Web App
+
+* Design
+
+A web app that lets users type in a term in a text box and returns the English definition of that term instantly as soon as the user has finished typing.
+
+The web app consists of a website with a navigation menu, a Home, Dictionary, and About page.
+
+* Objects
+
+** Definition
+*** term
+*** get()
+
+The classes below will be imported from a library
+** Navbar
+** HomePage
+** DictionaryPage
+** AboutPage
+
+* Program
+
+#+BEGIN_SRC python :tangle main.py
+
+#+END_SRC

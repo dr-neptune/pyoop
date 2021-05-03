@@ -27,6 +27,7 @@ An app that reads usernames, email addresses, and interests from an excel file a
 # api key: 890603a55bfa47048e4490069ebee18c
 import requests
 
+
 class NewsFeed:
     """
     Represents multiple news titles and links as a string
@@ -40,14 +41,17 @@ class NewsFeed:
         self.to_date = to_date
         self.language = language
 
-    def get(self):
-        # construct URL
-        url = self.base_url + \
+    def construct_url(self):
+        return self.base_url + \
             f"q={self.interest}" + \
             f"&from={self.from_date}" + \
             f"&to={self.to_date}" + \
             f"&language={self.language}" + \
             f"&apiKey={self.api_key}"
+
+    def get(self):
+        # construct URL
+        url = construct_url()
 
         # get pages
         content = requests.get(url).json()
