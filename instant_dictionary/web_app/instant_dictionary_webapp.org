@@ -23,3 +23,29 @@ The classes below will be imported from a library
 #+BEGIN_SRC python :tangle main.py
 
 #+END_SRC
+
+#+BEGIN_SRC python :tangle definition.py
+class Definition:
+    def __init__(self, term):
+        self.term = term
+
+    def get(self):
+        pass
+#+END_SRC
+
+
+#+BEGIN_SRC python :tangle webapp/home.py
+print("Hello, World!")
+#+END_SRC
+
+#+BEGIN_SRC python :tangle webapp/dictionary.py
+print("Hello, World!")
+#+END_SRC
+
+#+BEGIN_SRC python :tangle webapp/about.py
+print("Hello, World!")
+#+END_SRC
+
+#+BEGIN_SRC python :tangle webapp/navbar.py
+print("Hello, World!")
+#+END_SRC
