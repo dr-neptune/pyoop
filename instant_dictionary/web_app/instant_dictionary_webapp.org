@@ -49,3 +49,13 @@ print("Hello, World!")
 #+BEGIN_SRC python :tangle webapp/navbar.py
 print("Hello, World!")
 #+END_SRC
+
+* Scratch
+
+#+BEGIN_SRC python :tangle testing.py
+import pandas as pd
+#+END_SRC
+
+#+BEGIN_SRC python :tangle justpy_test.py
+print('Hello, World!')
+#+END_SRC
