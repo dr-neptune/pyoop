@@ -1,8 +1,9 @@
 import justpy as jp
 from layout import DefaultLayout
+from page import Page
 
 
-class About:
+class About(Page):
     path = "/about"
 
     @classmethod
