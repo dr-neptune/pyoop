@@ -1,4 +1,5 @@
 import justpy as jp
+import requests
 from definition import Definition
 from layout import DefaultLayout
 from page import Page
@@ -46,5 +47,7 @@ class Dictionary(Page):
 
     @staticmethod
     def get_definition(widget, msg):
-        defn_out = ("", *Definition(widget.value).get())
-        widget.outputdiv.text = "\n⁍\t".join(defn_out)
+
+        req = requests.get(f"http://127.0.0.1:8000/api?w={widget.value}").json()
+
+        widget.outputdiv.text = "\n⁍\t".join(["", *req["definition"]])
