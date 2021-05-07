@@ -100,11 +100,26 @@ def update_value(id, value, new_value):
     con = sqlite3.connect("cinema.db")
     con.execute(
         f"""
-        UPDATE "Seat" SET {value} = {new_value} WHERE "seat_id" = "{id}"
+        UPDATE "Seat" SET "{value}" = ? WHERE "seat_id" = ?
+        """,
+        [new_value, id],
+    )
+    con.commit()
+    con.close()
+
+
+update_value("A2", "taken", 0)
+
+# delete record
+def delete_record(id):
+    con = sqlite3.connect("cinema.db")
+    con.execute(
+        f"""
+        DELETE FROM "Seat" WHERE "seat_id" = "{id}"
         """
     )
     con.commit()
     con.close()
 
 
-update_value("A3", "taken", 1)
+delete_record("A3")

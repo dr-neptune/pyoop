@@ -1,0 +1,12 @@
+#+TITLE: Cinema App
+
+* Design
+
+We wish to build an app that allows a user to buy movie tickets.
+
+* Classes
+** User
+** Ticket
+** Database Connection
+
+* Program
