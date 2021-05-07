@@ -55,15 +55,12 @@ class Card(DBAccessor):
 
 
 # card = Card(card_holder="Marry Smith", db_name="banking.db")
-
 # print(card.get_cc_info())
-
 # print(card.check_cc_info_correct("Marry Smith", "Master Card", "23456789", "234"))
-
 # print(card.buy_seat(100))
 
 
-class Ticket(DBAccessor):
+class Seat(DBAccessor):
     """
     Represents a ticket for a seat
     """
@@ -106,6 +103,7 @@ class Ticket(DBAccessor):
         self.con.close()
 
 
-# new_seat = Ticket("A3", "cinema.db")
+# new_seat = Seat("A3", "cinema.db")
 # print(new_seat)
 # print(new_seat.get_seat_status())
+# print(new_seat.generate_ticket_number())

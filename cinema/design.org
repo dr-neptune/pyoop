@@ -8,5 +8,5 @@ We wish to build an app that allows a user to buy movie tickets.
 ** User
 ** Ticket
 ** Database Connection
-
-* Program
+** PdfReport
+** FileSharer
