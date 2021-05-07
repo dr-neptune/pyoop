@@ -1,125 +1,46 @@
-import sqlite3
+from db_ops import Card, Ticket
 
-## Create a Table
-table_creation_string = """
-CREATE TABLE "Seat" (
-	"seat_id"	TEXT,
-	"taken"	INTEGER,
-	"price"	REAL
-);
-"""
+# read in name
+# preferred seat number
+# card type
+# card number
+# card cvc
+# card holder name
 
+# get input information without any authentication whatsoever
+c_name = input("What is your name?\n\t➔  ")
+pref_seat = input("What is your preferred seat?\n\t➔  ")
+card_type = input("What is your card type?\n\t➔  ")
+card_num = input("What is your card number?\n\t➔  ")
+card_cvc = input("What is your card's cvc?\n\t➔  ")
+card_hname = input("What is the cardholder's name?\n\t➔  ")
 
-def create_table(db_location, db_query):
-    con = sqlite3.connect(db_location)
-    con.execute(db_query)
-    con.commit()
-    con.close()
+# instantiate objects
+card = Card(card_hname)
+ticket = Ticket(pref_seat)
 
+# check that seat is available
+seat_available = ticket.get_seat_status()
 
-# create_table("cinema.db", table_creation_string)
+# check that cc info is correct
+correct_info = card.check_cc_info_correct(
+    ch_name=card_hname, card_type=card_type, card_num=card_num, card_cvc=card_cvc
+)
 
-## Add Some Records
-## open the db connection
-con = sqlite3.connect("cinema.db")
-
-## write a single record to the open connection
-def insert_record(seat_id, taken, price):
-    con.execute(
-        f"""
-        INSERT INTO "Seat" ("seat_id", "taken", "price")
-        VALUES ("{seat_id}", "{taken}", "{price}")
-        """
-    )
-    con.commit()
-    print(
-        f"Record Inserted Successfully!:\nseat_id: {seat_id}\ttaken: {taken}\tprice: {price}"
-    )
-
-
-# make records
-records = {"seat_id": ["A1", "A2", "A3"], "taken": [0, 1, 0], "price": [90, 100, 80]}
-
-# push records to the database
-for i in range(len(records)):
-    insert_record(records["seat_id"][i], records["taken"][i], records["price"][i])
-
-# close the connection
-con.close()
-
-# SELECT
-def select_all():
-    con = sqlite3.connect("cinema.db")
-    # cursor is read only
-    cursor = con.cursor()
-    cursor.execute(
-        """
-        SELECT * FROM "Seat"
-        """
-    )
-    result = cursor.fetchall()
-    con.close()
-    return result
-
-
-def select_column(column_list):
-    con = sqlite3.connect("cinema.db")
-    # cursor is read only
-    cursor = con.cursor()
-    cursor.execute(
-        f"""
-        SELECT {', '.join(column_list)} FROM "Seat"
-        """
-    )
-    result = cursor.fetchall()
-    con.close()
-    return result
-
-
-def select_with_condition(column_list, conditions_str):
-    con = sqlite3.connect("cinema.db")
-    # cursor is read only
-    cursor = con.cursor()
-    cursor.execute(
-        f"""
-        SELECT {', '.join(column_list)} FROM "Seat"
-        WHERE {conditions_str}
-        """
-    )
-    result = cursor.fetchall()
-    con.close()
-    return result
-
-
-print(select_column(["seat_id", "taken"]))
-
-print(select_with_condition(["seat_id", "price"], '"price" > 80 AND "price" < 100'))
-
-# update value
-def update_value(id, value, new_value):
-    con = sqlite3.connect("cinema.db")
-    con.execute(
-        f"""
-        UPDATE "Seat" SET "{value}" = ? WHERE "seat_id" = ?
-        """,
-        [new_value, id],
-    )
-    con.commit()
-    con.close()
-
-
-update_value("A2", "taken", 0)
-
-# delete record
-def delete_record(id):
-    con = sqlite3.connect("cinema.db")
-    con.execute(
-        f"""
-        DELETE FROM "Seat" WHERE "seat_id" = "{id}"
-        """
-    )
-    con.commit()
-    con.close()
-
-
-delete_record("A3")
+# if correct, charge the account for the ticket
+if correct_info and seat_available:
+    print(f"The price of the seat is ${ticket.get_seat_cost()}.")
+    choice = input("Do you still wish to purchase it? (y / n)\n\t➔  ")
+    if choice == "y":
+        card.buy_seat(ticket.get_seat_cost())
+        ticket.change_seat_status("1")
+        print(f"Fantastic! You have purchased a ticket for seat {pref_seat}")
+    else:
+        print("Ah well, perhaps another seat")
+else:
+    if correct_info:
+        print(
+            "Unfortunately, that seat is not available at this time. Please try again."
+        )
+    else:
+        print("Unfortunately, we could not validate your card. Please try again.")

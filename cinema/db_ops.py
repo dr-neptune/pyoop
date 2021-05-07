@@ -9,7 +9,11 @@ class DBAccessor:
 
 
 class Card(DBAccessor):
-    def __init__(self, card_holder, db_name):
+    """
+    Represents a customer's credit card information
+    """
+
+    def __init__(self, card_holder, db_name="banking.db"):
         super().__init__(db_name)
         self.card_holder = card_holder
 
@@ -20,7 +24,13 @@ class Card(DBAccessor):
             SELECT type, number, cvc, holder FROM "Card" WHERE holder = "{self.card_holder}"
             """
         )
-        return cursor.fetchall()
+        results = cursor.fetchall()[0]
+        return {
+            "type": results[0],
+            "num": results[1],
+            "cvc": results[2],
+            "name": results[3],
+        }
 
     def buy_seat(self, seat_price):
         self.con.execute(
@@ -31,15 +41,34 @@ class Card(DBAccessor):
         self.con.commit()
         self.con.close()
 
+    def check_cc_info_correct(self, ch_name, card_type, card_num, card_cvc):
+        # get cardholder info by name
+        cc_info = self.get_cc_info()
+        return all(
+            [
+                cc_info["name"] == ch_name,
+                cc_info["type"] == card_type,
+                cc_info["num"] == card_num,
+                cc_info["cvc"] == card_cvc,
+            ]
+        )
+
 
 # card = Card(card_holder="Marry Smith", db_name="banking.db")
-# print(card.con)
+
 # print(card.get_cc_info())
+
+# print(card.check_cc_info_correct("Marry Smith", "Master Card", "23456789", "234"))
+
 # print(card.buy_seat(100))
 
 
 class Ticket(DBAccessor):
-    def __init__(self, seat_id, db_name):
+    """
+    Represents a ticket for a seat
+    """
+
+    def __init__(self, seat_id, db_name="cinema.db"):
         super().__init__(db_name)
         self.seat_id = seat_id
 
@@ -56,6 +85,25 @@ class Ticket(DBAccessor):
 
         # if seat open, return True, ow False
         return True if seat_status == 0 else False
+
+    def get_seat_cost(self):
+        cursor = self.con.cursor()
+        cursor.execute(
+            f"""
+            SELECT price FROM "Seat" WHERE seat_id = "{self.seat_id}"
+            """
+        )
+
+        return float(cursor.fetchall()[0][0])
+
+    def change_seat_status(self, new_status):
+        self.con.execute(
+            f"""
+            UPDATE "Seat" SET taken = {new_status} WHERE seat_id = "{self.seat_id}"
+            """
+        )
+        self.con.commit()
+        self.con.close()
 
 
 # new_seat = Ticket("A3", "cinema.db")
